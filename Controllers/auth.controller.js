@@ -5,6 +5,7 @@ const {
 } = require("../Utils/jwt.utils");
 
 const signup = async (req, res) => {
+  req.body.email = req.user.email;
   const user = await createUser(req.body);
 
   try {
@@ -16,8 +17,14 @@ const signup = async (req, res) => {
       });
     }
 
-    const accessToken = generateAccessToken({ _id: user._id });
-    const refreshToken = generateRefreshToken({ _id: user._id });
+    const accessToken = generateAccessToken(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_EXPIRY
+    );
+    const refreshToken = generateRefreshToken(
+      { _id: user._id },
+      process.env.REFRESH_TOKEN_EXPIRY
+    );
 
     return res.status(200).send({
       message: "User created successfully",
@@ -38,8 +45,14 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const accessToken = generateAccessToken({ _id: req.user._id });
-    const refreshToken = generateRefreshToken({ _id: req.user._id });
+    const accessToken = generateAccessToken(
+      { _id: req.user._id },
+      process.env.ACCESS_TOKEN_EXPIRY
+    );
+    const refreshToken = generateRefreshToken(
+      { _id: req.user._id },
+      process.env.REFRESH_TOKEN_EXPIRY
+    );
 
     return res.status(200).send({
       message: "Successful Login",
@@ -76,8 +89,14 @@ const me = (req, res) => {
 
 const refreshToken = (req, res) => {
   try {
-    const accessToken = generateAccessToken({ _id: req.user._id });
-    const refreshToken = generateRefreshToken({ _id: req.user._id });
+    const accessToken = generateAccessToken(
+      { _id: req.user._id },
+      process.env.ACCESS_TOKEN_EXPIRY
+    );
+    const refreshToken = generateRefreshToken(
+      { _id: req.user._id },
+      process.env.REFRESH_TOKEN_EXPIRY
+    );
 
     return res.status(200).send({
       message: "Token Generated Successfully",

@@ -4,6 +4,7 @@ const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const { User } = require("../Schema/user.schema");
 const { comparePassword } = require("../Utils/bcrypt.utils");
+const { OTP } = require("../Schema/otp.schema");
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
@@ -41,7 +42,8 @@ passport.use(
   "jwt-access",
   new JwtStrategy(jwtAccessOptions, async (jwt_payload, done) => {
     try {
-      if (!jwt_payload) return done({ message: "Session Expired!" }, false);
+      if (!jwt_payload)
+        return done({ message: null, error: "Session Expired!" }, false);
       const user = await User.findOne({ _id: jwt_payload._id }).select(
         "-password"
       );
@@ -64,7 +66,26 @@ passport.use(
   "jwt-refresh",
   new JwtStrategy(jwtRefreshOptions, async (jwt_payload, done) => {
     try {
+      if (!jwt_payload)
+        return done({ message: null, error: "Session Expired!" }, false);
       const user = await User.findById(jwt_payload._id);
+      if (user) {
+        return done(null, user);
+      }
+      return done(null, false);
+    } catch (err) {
+      return done(err, false);
+    }
+  })
+);
+
+passport.use(
+  "jwt-otp",
+  new JwtStrategy(jwtAccessOptions, async (jwt_payload, done) => {
+    try {
+      if (!jwt_payload)
+        return done({ message: null, error: "Session Expired!" }, false);
+      const user = await OTP.findOne({ email: jwt_payload.email });
       if (user) {
         return done(null, user);
       }

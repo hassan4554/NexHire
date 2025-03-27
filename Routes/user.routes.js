@@ -7,7 +7,7 @@ const {
   update_password,
 } = require("../Controllers/user.controller");
 const { passportAuth } = require("../Utils/passport.utils");
-const passwordValidationSchema = require("../Schema/newPassword.validation");
+const { passwordValidationSchema } = require("../Schema/validations.schema");
 
 router.delete("/", passportAuth("jwt-access", { session: false }), delete_user);
 
