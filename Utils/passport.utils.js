@@ -9,12 +9,10 @@ const passportAuth = (strategy, options = {}) => {
             .status(400)
             .json({ message: "Server error", error: err?.message });
         if (!user)
-          return res
-            .status(404)
-            .json({
-              message: info?.message || "Unauthorized",
-              error: "No User Found",
-            });
+          return res.status(404).send({
+            message: "No user found",
+            error: info?.message || "Unauthorized",
+          });
 
         req.user = user;
         next();
